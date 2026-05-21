@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daniela Corrente   Operations Hub</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; font-size: 15px; line-height: 1.6; }
+  .page { max-width: 940px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 2rem; background: #eeeee9; border-radius: 10px; padding: 4px; width: fit-content; }
+  .tab { padding: 8px 22px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: #888; border: none; background: none; transition: all 0.15s; }
+  .tab.active { background: #fff; color: #1a1a1a; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* WELCOME */
+  .welcome { background: #fff; border: 0.5px solid #e0e0dc; border-radius: 14px; padding: 2rem 2.5rem; margin-bottom: 2rem; }
+  .welcome-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+  .welcome-title { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 12px; }
+  .welcome-body { font-size: 14px; color: #555; line-height: 1.8; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 2rem; }
+  .stat-card { background: #f4f4f0; border-radius: 10px; padding: 14px 16px; }
+  .stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 500; color: #1a1a1a; }
+  .stat-note { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+  /* SECTION LABELS */
+  .section-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 0.5px solid #e8e8e4; }
+
+  /* PROJECT CARDS */
+  .col-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 2rem; }
+  .col-head { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: #666; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-purple { background: #534AB7; }
+  .dot-teal { background: #1D9E75; }
+  .dot-coral { background: #D85A30; }
+  .card { background: #fff; border: 0.5px solid #e0e0dc; border-radius: 12px; padding: 13px 16px; cursor: pointer; transition: border-color 0.15s, background 0.12s; margin-bottom: 8px; }
+  .card:hover { border-color: #bbb; background: #fafaf8; }
+  .card.active { border-color: #534AB7; }
+  .card-name { font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
+  .card-sub { font-size: 12px; color: #888; }
+
+  /* DETAIL PANEL */
+  .detail { display: none; background: #fff; border: 0.5px solid #e0e0dc; border-radius: 14px; padding: 22px 26px; margin-bottom: 2rem; }
+  .detail.open { display: block; }
+  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 0.5px solid #eee; }
+  .detail-title { font-size: 18px; font-weight: 500; color: #1a1a1a; margin-bottom: 3px; }
+  .detail-meta { font-size: 12px; color: #888; }
+  .close-btn { background: none; border: 0.5px solid #ddd; border-radius: 8px; padding: 4px 12px; font-size: 12px; cursor: pointer; color: #666; }
+  .close-btn:hover { background: #f5f5f3; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .detail-block.full { grid-column: 1 / -1; }
+  .block-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .block-body { font-size: 14px; color: #555; line-height: 1.65; }
+  .block-body ul { padding-left: 16px; margin-top: 4px; }
+  .block-body ul li { margin-bottom: 3px; }
+  .tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 6px; margin-top: 14px; }
+  .tag-purple { background: #EEEDFE; color: #3C3489; }
+  .tag-teal { background: #E1F5EE; color: #0F6E56; }
+  .tag-coral { background: #FAECE7; color: #993C1D; }
+
+  /* YOUR ROLE TAB */
+  .role-section { background: #fff; border: 0.5px solid #e0e0dc; border-radius: 14px; padding: 22px 26px; margin-bottom: 16px; }
+  .role-section-title { font-size: 15px; font-weight: 500; color: #1a1a1a; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 0.5px solid #eee; display: flex; align-items: center; gap: 8px; }
+  .role-icon { font-size: 16px; }
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .role-block { }
+  .role-block.full { grid-column: 1 / -1; }
+  .role-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .role-body { font-size: 14px; color: #555; line-height: 1.7; }
+  .role-body ul { padding-left: 16px; margin-top: 4px; }
+  .role-body ul li { margin-bottom: 4px; }
+
+  /* PROJECT RESPONSIBILITY CARDS */
+  .proj-resp { background: #fafaf8; border: 0.5px solid #e8e8e4; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+  .proj-resp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .proj-resp-name { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+  .proj-resp-cat { font-size: 11px; color: #888; margin-top: 1px; }
+  .proj-resp-body { font-size: 13px; color: #555; line-height: 1.65; }
+  .proj-resp-body ul { padding-left: 16px; margin-top: 4px; }
+  .proj-resp-body ul li { margin-bottom: 3px; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 500; flex-shrink: 0; margin-left: 8px; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-teal { background: #E1F5EE; color: #0F6E56; }
+  .badge-coral { background: #FAECE7; color: #993C1D; }
+
+  .time-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; background: #f0f0ea; border-radius: 6px; padding: 4px 10px; color: #555; margin-right: 6px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div style="margin-bottom: 1.5rem;">
+    <p style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:6px;">ROI Labs · Operations</p>
+    <h1 style="font-size:24px;font-weight:500;color:#1a1a1a;">Daniela Corrente   Hub</h1>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('role')">Your Role</button>
+    <button class="tab" onclick="switchTab('projects')">Projects</button>
+  </div>
+
+  <!-- ==================== TAB 1: YOUR ROLE ==================== -->
+  <div class="tab-content active" id="tab-role">
+
+    <!-- WELCOME -->
+    <div class="welcome" style="margin-bottom:1.5rem;">
+      <p class="welcome-eyebrow">Onboarding · Your role</p>
+      <p class="welcome-title">So excited to have you here, Valentina.</p>
+      <p class="welcome-body">Welcome to the team. Having you here is a big deal   you're stepping into a role that sits at the center of everything. I'm building something ambitious across multiple clients, advisory work, and community roles, and I need a right hand who's sharp, proactive, and can run things while I'm on the move.<br><br>
+      This is a place where you have real ownership. I believe in giving people the space to manage their own time and work their own way   as long as things get done and we're communicating well. I'm not a micromanager. What I need is someone I can trust completely.<br><br>
+      Open communication is everything. If something isn't clear, ask. If you see something I'm missing, say it. I want you to feel like a real partner, not just support. Let's build something great together.</p>
+    </div>
+
+    <!-- HOW WE WORK -->
+    <div class="role-section">
+      <div class="role-section-title"><span class="role-icon">🕐</span> How We Work Together</div>
+      <div class="role-grid">
+        <div class="role-block full">
+          <div class="role-label">Schedule & Overlap</div>
+          <div class="role-body">
+            You manage your own schedule   as long as deliverables are done and we're in sync, you have full flexibility. That said, for the next three months while Daniela is in Europe, we've agreed on a daily overlap window:<br><br>
+            <span class="time-badge">⏰ 8:30 AM – 12:30 PM ET</span> <span class="time-badge">📍 Monday – Friday</span> <span class="time-badge">🌍 Daniela is in Paris (CET = ET + 6hrs)</span><br><br>
+            This is when we connect, sync on priorities, and handle anything that needs a real-time decision. Outside of this window, Daniela may send messages that you can pick up when you're back on.
+          </div>
+        </div>
+        <div class="role-block">
+          <div class="role-label">WhatsApp Channel</div>
+          <div class="role-body">Daniela will send you messages to a dedicated WhatsApp channel throughout the day   including from Europe. You can mute this channel outside of your working hours. When you start your day, check it first. This is where Daniela will drop urgent flags, quick asks, context on meetings, and anything she needs you to act on. Think of it as her direct line to you.</div>
+        </div>
+        <div class="role-block">
+          <div class="role-label">Daily Briefing Email</div>
+          <div class="role-body"><b>You send this to Daniela every morning before 8:30 AM ET.</b> It should cover: today's meetings (name, company, LinkedIn profile, context on who they are), any RSVPs that need a response, anything urgent or pending from the day before, and the top 3 priorities for the day. Keep it short, clear, and scannable   Daniela reads it on her phone.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCESS & TOOLS -->
+    <div class="role-section">
+      <div class="role-section-title"><span class="role-icon">🔑</span> Access & Tools</div>
+      <div class="role-grid">
+        <div class="role-block">
+          <div class="role-label">Email</div>
+          <div class="role-body">You will have access to Daniela's email. Manage the inbox   flag urgent messages, sort, draft responses for approval. As you get comfortable with her voice and the relationships, you'll move toward sending independently.</div>
+        </div>
+        <div class="role-block">
+          <div class="role-label">LinkedIn + Sales Navigator</div>
+          <div class="role-body">Full access. You can respond to messages, accept connections, and send new outreach. At the start, draft messages for Daniela to approve   then move to sending directly as you build confidence in her voice and BD strategy.</div>
+        </div>
+        <div class="role-block">
+          <div class="role-label">Slack</div>
+          <div class="role-body">ROI Labs and Drafted both run on Slack. You'll have access to both workspaces. This is where day-to-day team communication happens   monitor channels, respond on Daniela's behalf where appropriate, and flag anything that needs her attention.</div>
+        </div>
+        <div class="role-block">
+          <div class="role-label">AI Tools</div>
+          <div class="role-body">Use AI tools (Claude, ChatGPT) actively   for drafting, research, summarizing, formatting. Speed and quality both matter. If you can use AI to do something faster without losing quality, do it.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSIBILITIES -->
+    <div class="role-section">
+      <div class="role-section-title"><span class="role-icon">📋</span> Responsibilities by Bucket</div>
+      <div class="role-grid">
+
+        <div class="role-block full">
+          <div class="role-label">1   Communications & Email</div>
+          <div class="role-body"><ul>
+            <li>Manage Daniela's inbox daily   sort, flag urgent, archive noise</li>
+            <li>Draft email responses in Daniela's voice for approval → then send independently</li>
+            <li>Flag any RSVP, event invite, or time-sensitive request same day</li>
+            <li>Track follow-ups   nothing falls through the cracks</li>
+            <li>Send the daily briefing email each morning before 8:30 AM ET</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block full">
+          <div class="role-label">2   LinkedIn & Sales Navigator</div>
+          <div class="role-body"><ul>
+            <li>Respond to LinkedIn messages in Daniela's voice</li>
+            <li>Send connection requests and outreach messages (draft first → then send independently)</li>
+            <li>Post on LinkedIn on Daniela's behalf during events and key moments</li>
+            <li>Use Sales Navigator to identify and track leads</li>
+            <li>If Daniela meets someone at an event and asks you to connect + send a document, execute within the hour</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block full">
+          <div class="role-label">3   BD & Outreach</div>
+          <div class="role-body"><ul>
+            <li>Proactively identify leads for ROI Labs   target: decision-makers at banks, credit unions, fintechs, and financial institutions</li>
+            <li>Identify brand partnership leads for LMC Content Hub   consumer brands, B-corps, social-impact companies</li>
+            <li>Build and maintain outreach lists using Sales Navigator</li>
+            <li>Draft all outreach messages for review at first, then own the send</li>
+            <li>Track all outreach in the appropriate tool</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block full">
+          <div class="role-label">4   Calendar & Admin</div>
+          <div class="role-body"><ul>
+            <li>Own Daniela's calendar   schedule, confirm, reschedule as needed</li>
+            <li>Research all meeting attendees before the day's briefing   LinkedIn profile, company, context</li>
+            <li>Handle RSVPs for events, panels, and industry gatherings</li>
+            <li>Track key deadlines across all projects   see the Projects tab for per-project details</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block full">
+          <div class="role-label">5   AI-Powered Execution</div>
+          <div class="role-body"><ul>
+            <li>Use AI tools to draft faster, research smarter, and format cleaner</li>
+            <li>Help prep pitch decks, one-pagers, and media kits using AI + Canva</li>
+            <li>Summarize long email threads or documents so Daniela gets the key points fast</li>
+            <li>Automate repetitive tasks where possible</li>
+          </ul></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACCESS CHECKLIST -->
+    <div class="role-section">
+      <div class="role-section-title"><span class="role-icon">✅</span> Platform Access Checklist</div>
+      <p style="font-size:13px;color:#888;margin-bottom:16px;">Everything you need access to before you can start. Check these off as you get set up.</p>
+      <div class="role-grid">
+
+        <div class="role-block">
+          <div class="role-label">Communications</div>
+          <div class="role-body"><ul>
+            <li>☐ Daniela's email (ROI Labs   Daniela@theroilabs.com)</li>
+            <li>☐ Daniela's personal email (La Familia Foundation comms)</li>
+            <li>☐ WhatsApp   join dedicated ops channel</li>
+            <li>☐ Slack   ROI Labs workspace</li>
+            <li>☐ Slack   Drafted workspace</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block">
+          <div class="role-label">Social & BD</div>
+          <div class="role-body"><ul>
+            <li>☐ LinkedIn   Daniela's account</li>
+            <li>☐ LinkedIn Sales Navigator</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block">
+          <div class="role-label">AI Tools</div>
+          <div class="role-body"><ul>
+            <li>☐ Claude (claude.ai)</li>
+            <li>☐ ChatGPT</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block">
+          <div class="role-label">Design & Content</div>
+          <div class="role-body"><ul>
+            <li>☐ Canva   ROI Labs account</li>
+          </ul></div>
+        </div>
+
+        <div class="role-block full">
+          <div class="role-label">Project-Specific</div>
+          <div class="role-body"><ul>
+            <li>☐ Google Calendar   Daniela's calendar access</li>
+            <li>☐ ROI Labs   TheRoiLabs.com backend / website (coordinate with Frank)</li>
+            <li>☐ LMC Monday.com   pipeline CRM for Latino Media Consortium (request access from Lucy Flores)</li>
+          </ul></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end tab-role -->
+  <div class="tab-content" id="tab-projects">
+
+    <div class="welcome">
+      <p class="welcome-eyebrow">Operations hub · Projects</p>
+      <p class="welcome-title">All active projects.</p>
+      <p class="welcome-body">Click any card to see who they are, what's active, key contacts, and your specific responsibilities on that project.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><p class="stat-label">Active clients</p><p class="stat-value">5</p><p class="stat-note">Includes ROI Labs + LMC</p></div>
+      <div class="stat-card"><p class="stat-label">Advisory engagements</p><p class="stat-value">3</p><p class="stat-note">1 signed, 2 exploring</p></div>
+      <div class="stat-card"><p class="stat-label">Nonprofit roles</p><p class="stat-value">2</p><p class="stat-note">AHA wraps June 2026</p></div>
+    </div>
+
+    <p class="section-label">Click any card to expand</p>
+
+    <div class="col-grid">
+      <div>
+        <div class="col-head"><span class="dot dot-purple"></span> Clients</div>
+        <div class="card" id="c-roi" onclick="openPanel('roi')"><p class="card-name">ROI Labs</p><p class="card-sub">Performance strategy · Own company</p></div>
+        <div class="card" id="c-drafted" onclick="openPanel('drafted')"><p class="card-name">Drafted</p><p class="card-sub">BD & strategy consultant · wearedrafted.co</p></div>
+        <div class="card" id="c-cohort" onclick="openPanel('cohort')"><p class="card-name">Your Cohort</p><p class="card-sub">BD & strategy consultant · yourcohort.co</p></div>
+        <div class="card" id="c-mujeres" onclick="openPanel('mujeres')"><p class="card-name">Mujeres Latinas en Acción</p><p class="card-sub">Client · mujereslat.org</p></div>
+        <div class="card" id="c-lmc" onclick="openPanel('lmc')"><p class="card-name">Latino Media Consortium</p><p class="card-sub">BD & strategy consultant · wearelatinomedia.org</p></div>
+      </div>
+      <div>
+        <div class="col-head"><span class="dot dot-teal"></span> Advisory</div>
+        <div class="card" id="c-served" onclick="openPanel('served')"><p class="card-name">Served</p><p class="card-sub">Equity adviser · getserved.ai</p></div>
+        <div class="card" id="c-fuser" onclick="openPanel('fuser')"><p class="card-name">Fuser Studio</p><p class="card-sub">Advisory · fuser.studio</p></div>
+        <div class="card" id="c-church" onclick="openPanel('church')"><p class="card-name">Church AI</p><p class="card-sub">Advisory · churchai.com</p></div>
+      </div>
+      <div>
+        <div class="col-head"><span class="dot dot-coral"></span> Nonprofit</div>
+        <div class="card" id="c-aha" onclick="openPanel('aha')"><p class="card-name">American Heart Association</p><p class="card-sub">Co-chair, young board · heart.org</p></div>
+        <div class="card" id="c-lafamilia" onclick="openPanel('lafamilia')"><p class="card-name">La Familia Foundation</p><p class="card-sub">City lead · lafamiliafoundation.com</p></div>
+      </div>
+    </div>
+
+    <div class="detail" id="detail">
+      <div class="detail-top">
+        <div><p class="detail-title" id="d-title"></p><p class="detail-meta" id="d-meta"></p></div>
+        <button class="close-btn" onclick="closePanel()">Close</button>
+      </div>
+      <div class="detail-grid" id="d-grid"></div>
+      <div id="d-tag"></div>
+    </div>
+
+  </div><!-- end tab-projects -->
+
+</div><!-- end page -->
+
+<script>
+// TAB SWITCHING
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// PROJECT PANEL DATA
+var data = {
+  roi: {
+    title: 'ROI Labs',
+    meta: 'Own company · Performance-driven growth systems for financial institutions · TheRoiLabs.com',
+    cat: 'purple', status: 'Active',
+    blocks: [
+      { label: 'What it is', body: 'ROI Labs is Daniela and Mary\'s company. It builds performance-driven growth systems for financial institutions   helping banks close the gap between customer acquisition and deposits. High-impact external growth partner; execution without adding headcount.', full: true },
+      { label: 'The three practices', body: '(1) Deposit acquisition   paid strategy, digital account opening, segment targeting. (2) Customer growth & lifecycle   onboarding, cross-sell, churn reduction. (3) Growth operating system   KPI dashboards, opportunity audits, growth cadence.' },
+      { label: 'Proven results', body: '710% increase in digital deposits (12-month engagement). 64% increase in onboarding completion. 80% decrease in CPA vs benchmark.' },
+      { label: 'Daniela Corrente   CEO', body: 'Inc. Top 100 Female Founder and Latina of the Year 2023. 20+ years identifying opportunity and scaling it. Helped launch Ally Bank digitally, founded and exited a fintech platform. · Daniela@theroilabs.com' },
+      { label: 'Mary Hernandez   Chief Innovation Officer', body: '20+ years building growth systems. Led performance strategies for Wells Fargo, Chase, Bank of America, Target, Toyota, T-Mobile. Architects the scalable growth engines at ROI Labs. · mary@theroilabs.com' },
+      { label: 'Banking Partners   Vaullt Bank & Always Bank', body: 'Two active ROI Labs banking clients. Mary Hernandez leads day-to-day execution. <b>Vaullt Bank:</b> bi-weekly report   review narrative before it goes to client. <b>Always Bank:</b> recurring meeting every Tuesday at 8:30 AM PT. Primary contact: Mary Hernandez   Endless Execution.', full: true },
+      { label: 'Key contacts', body: 'Daniela Corrente (CEO) · Daniela@theroilabs.com · Mary Hernandez (CIO) · mary@theroilabs.com' },
+      { label: 'Your job', body: '<ul><li>Oversee LinkedIn   post content, respond to messages, manage outreach in Daniela\'s voice</li><li>Monitor brand consistency across all outward-facing materials</li><li>Support website coordination with Frank</li><li>Proactively identify leads: decision-makers at banks, credit unions, and fintechs</li><li>Draft BD outreach emails and LinkedIn messages</li><li>Monitor both ROI Labs and Drafted Slack workspaces</li><li><b>Vaullt Bank:</b> Review bi-weekly report narrative before it goes to the client   flag anything off to Daniela</li><li><b>Always Bank:</b> Weekly meeting Tuesdays 8:30 AM PT   add to calendar, prep briefing the night before</li></ul>', full: true },
+    ]
+  },
+  drafted: {
+    title: 'Drafted', meta: 'wearedrafted.co · BD & strategy consultant', cat: 'purple', status: 'Active',
+    blocks: [
+      { label: 'What it is', body: 'A sports media platform built around culture and community. SZN XI is the current flagship activation. World Cup programming is the next major moment.', full: true },
+      { label: 'BD oversight', body: 'Outreach to brand and media partners for SZN XI and World Cup programming. Verizon and UMG are active in the pipeline.' },
+      { label: 'Active priorities', body: 'Support outreach follow-ups. Finalize UMG deliverables. Build World Cup content plan.' },
+      { label: 'Key contacts', body: 'Karina · Jen (Jennifer)' },
+      { label: 'Your job', body: '<ul><li>Support BD outreach   research and draft messages to brand partners and sponsors</li><li>Track follow-ups with Karina and Jen, flag anything that needs attention</li><li>Help with LinkedIn posts related to Drafted activations</li><li>When Daniela meets a potential partner and asks you to send the Drafted deck, do it immediately</li></ul>', full: true },
+    ]
+  },
+  lmc: {
+    title: 'Latino Media Consortium', meta: 'wearelatinomedia.org · BD & strategy consultant · Content Hub', cat: 'purple', status: 'Starting June 1, 2026',
+    blocks: [
+      { label: 'What it is', body: 'A 501(c)(3) nonprofit Latino media network. The LMC Content Hub is a programmatic ad-enabled content network reaching millions of Latinos nationwide across publisher sites, newsletters, and social. Pilot: 952,980 collection loads, 279,864 impressions across 6 outlets.', full: true },
+      { label: 'Daniela\'s role', body: 'External sales consultant leading all brand advertising and sponsorship sales for the Content Hub. Full sales cycle: prospecting, pitching, negotiating, closing. Monthly pipeline reports to Lucy Flores.' },
+      { label: 'Compensation', body: 'Base retainer: $3,500/mo (Q2), $4,000/mo (Q3), $4,500/mo (Q4+). Commission: tiered 8–15% on closed brand deals. First close target: $250K by end of Q3 2026.' },
+      { label: 'Active priorities', body: 'Build rate card (Month 1   before outbound begins). Build target brand list. Prep short-form media kit.' },
+      { label: 'Key contacts', body: 'Lucy Flores   President · lucy@wearelatinomedia.org' },
+      { label: 'Your job', body: '<ul><li>Support BD outreach   identify consumer brands, B-corps, and social-impact companies as leads</li><li>Help prep and update the media kit (1-pager: reach data, ad formats, CPM options)</li><li>Draft the monthly pipeline report (due last business day of each month) for Daniela to review and send</li><li>Track rate card creation   must be done in Month 1 before outbound begins</li><li>Have the Content Hub deck ready to send on demand when Daniela meets a brand partner</li><li>Flag all emails from Lucy Flores and LMC contacts same day</li></ul>', full: true },
+    ]
+  },
+  cohort: {
+    title: 'Your Cohort', meta: 'yourcohort.co · BD & strategy consultant', cat: 'purple', status: 'Starting June 2026',
+    blocks: [
+      { label: 'What it is', body: 'A fractional advisory engagement where Daniela acts as a strategic operator helping build the company\'s growth infrastructure. Structured in two phases. Engagement starts June 2026.', full: true },
+      { label: 'Phase 1 (June – Q3 2026)', body: 'Revenue pipeline, market positioning to attract clients and talent, team structure and people operations, internal process improvement.' },
+      { label: 'Phase 2 (Q4 2026 – Q1 2027)', body: 'Client experience design, value measurement and retention frameworks, service structure and scalability.' },
+      { label: 'Key contacts', body: 'Alex   client lead and founder.' },
+      { label: 'Your job', body: '<ul><li>Schedule and confirm meetings with Alex, prep Daniela\'s briefing before each one</li><li>Track Phase 1 milestones   flag if anything is at risk of slipping</li><li>Support document prep and follow-up materials</li></ul>', full: true },
+    ]
+  },
+  banking: {
+    title: 'Banking Partners', meta: 'Vaullt Bank · Always Bank · Oversight', cat: 'purple', status: 'Ongoing',
+    blocks: [
+      { label: 'What it is', body: 'Two banking clients ROI Labs works with on growth and rewards programs. Mary Hernandez leads execution alongside the team. Daniela oversees at a high level.', full: true },
+      { label: 'Role of this position', body: 'Review the Vaullt bi-weekly report   check that the narrative is clear and coherent before it goes to the client. Flag anything that needs Daniela\'s attention.' },
+      { label: 'Focus area', body: 'Rewards program reporting. Ensuring quality and narrative coherence on client-facing deliverables.' },
+      { label: 'Key contacts', body: 'Mary Hernandez   Endless Execution' },
+      { label: 'Your job', body: '<ul><li><b>Vaullt Bank:</b> Review the bi-weekly report narrative before it goes to the client   flag anything that feels off to Daniela</li><li><b>Always Bank:</b> Weekly meeting every Tuesday at 8:30 AM PT   add to calendar, prep briefing the night before</li><li>Surface any banking client emails that need Daniela\'s attention</li></ul>', full: true },
+    ]
+  },
+  mujeres: {
+    title: 'Mujeres Latinas en Acción', meta: 'mujereslat.org · Client · Grant submitted', cat: 'purple', status: 'Awaiting grant decision   August 2026',
+    blocks: [
+      { label: 'What it is', body: 'A nonprofit organization ROI Labs has submitted a grant for and supported with promotional campaigns including Voces Unidas 2026.', full: true },
+      { label: 'Current status', body: 'Grant submitted. No action needed until August 2026, when ROI Labs will learn if they advanced to the next step of the grant process.' },
+      { label: 'Key contacts', body: 'Angela Anderson Guerrero   President & CEO · aanderson@mujereslat.org · Lisa Martinez   Marketing · lmartinez@mujereslat.org' },
+      { label: 'Your job', body: '<ul><li>No active action items right now</li><li>Set a reminder for August 2026 to check on grant decision status</li><li>Flag any emails from aanderson@mujereslat.org or lmartinez@mujereslat.org immediately when they come in</li></ul>', full: true },
+    ]
+  },
+  served: {
+    title: 'Served', meta: 'getserved.ai · Strategic Adviser · Signed 04/26/2026', cat: 'teal', status: '0.25% equity · 24-month vest · no cliff',
+    blocks: [
+      { label: 'What it is', body: 'An agentic kitchen technology company   using AI to automate and enhance restaurant and food service operations. CEO is Dmitri Love.', full: true },
+      { label: 'Adviser agreement', body: 'Signed April 26, 2026. Base equity: 0.25% vesting over 24 months (no cliff). Performance equity: additional 0.25% if Daniela introduces investors totaling $500K+ by ~October 2026.' },
+      { label: '⚠️ Key deadline', body: 'Performance equity window closes ~October 26, 2026. Any investor Daniela introduces with no prior relationship to Served counts toward the $500K threshold.' },
+      { label: 'Key contacts', body: 'Dmitri Love   CEO, Served Technology' },
+      { label: 'Your job', body: '<ul><li>⚠️ Track the performance equity deadline: ~October 26, 2026   flag this proactively and keep it on the radar</li><li>Support investor intro coordination   help prep communications when Daniela identifies someone to introduce</li><li>Flag all emails from Dmitri Love or Served Technology</li></ul>', full: true },
+    ]
+  },
+  fuser: {
+    title: 'Fuser Studio', meta: 'fuser.studio · Advisory · with Dalena', cat: 'teal', status: 'Exploring',
+    blocks: [
+      { label: 'What it is', body: 'A node-based AI creative workflow platform. 250+ AI models for image, video, audio, and 3D, plus 400+ LLMs   all in one canvas. Built for professional creatives.', full: true },
+      { label: 'Current status', body: 'Daniela is exploring an advisory role with Dalena. No agreement yet.' },
+      { label: 'Next step', body: 'Schedule meeting to define scope of advisory contribution.' },
+      { label: 'Key contacts', body: 'Dalena   counterpart on this engagement' },
+      { label: 'Your job', body: 'Support scheduling of meetings with Dalena. Track where the conversation is   has a next meeting been set? Flag if it\'s going cold.', full: true },
+    ]
+  },
+  church: {
+    title: 'Church AI', meta: 'churchai.com · General advising', cat: 'teal', status: 'Exploring opportunity',
+    blocks: [
+      { label: 'What it is', body: 'An AI platform for churches   predicts member disengagement, automates follow-up and admin, surfaces next donors and volunteer leaders. Replaces 6+ tools. Built by pastors.', full: true },
+      { label: 'Current status', body: 'General advising   no equity. Opportunity is being explored.' },
+      { label: 'Next step', body: 'Schedule a meeting to assess the opportunity and define how Daniela can contribute.' },
+      { label: 'Key contacts', body: 'churchai.com' },
+      { label: 'Your job', body: 'No action items right now. Set a reminder to check in with Daniela on this in late June 2026 to assess next steps.', full: true },
+    ]
+  },
+  aha: {
+    title: 'American Heart Association', meta: 'heart.org · Co-Chair · Young Professionals Board · Los Angeles', cat: 'coral', status: 'Term ending June 2026',
+    blocks: [
+      { label: 'What it is', body: 'Daniela serves as Co-Chair of the AHA Young Professionals Board in Los Angeles. Leadership volunteer role driving programming, fundraising, and community engagement. Term ends June 2026.', full: true },
+      { label: 'Current status', body: 'Wrapping up the term. Focus is on completing remaining commitments and handoffs before June close.' },
+      { label: 'Active priorities', body: 'Finalize term deliverables. Support remaining events or fundraising goals. Assist with transition.' },
+      { label: 'Key contacts', body: 'AHA board members and chapter staff   to be introduced.' },
+      { label: 'Your job', body: '<ul><li>Support any remaining board commitments before June close</li><li>Help prep for any final events, panels, or fundraising asks</li><li>Flag any AHA emails that need action before the term ends</li></ul>', full: true },
+    ]
+  },
+  lafamilia: {
+    title: 'La Familia Foundation', meta: 'lafamiliafoundation.com · City Lead · Los Angeles', cat: 'coral', status: 'Active',
+    blocks: [
+      { label: 'What it is', body: 'A community-centered nonprofit. Daniela serves as City Lead for Los Angeles   building community both operationally (events, programs) and relationally (partnerships, connections). Communication is primarily via WhatsApp.', full: true },
+      { label: 'The role', body: 'Dual: operational (organizing programs and events in LA) and relational (building partnerships, connecting people, expanding the Foundation\'s presence).' },
+      { label: 'Active priorities', body: 'Grant applications (high priority). Community programming and activations in LA.' },
+      { label: 'Key contacts', body: 'Karen · Ernesto · Claudia   communicate via WhatsApp.' },
+      { label: 'Your job', body: '<ul><li>Monitor the WhatsApp group   flag anything that needs Daniela\'s attention</li><li>Help coordinate community programming and event logistics as needed</li><li>Connected to Daniela\'s personal email   monitor for any La Familia communications there</li></ul>', full: true },
+    ]
+  }
+};
+
+var active = null;
+
+function openPanel(id) {
+  if (active) document.getElementById('c-' + active).classList.remove('active');
+  active = id;
+  document.getElementById('c-' + id).classList.add('active');
+  var p = data[id];
+  document.getElementById('d-title').textContent = p.title;
+  document.getElementById('d-meta').textContent = p.meta;
+  var grid = document.getElementById('d-grid');
+  grid.innerHTML = '';
+  p.blocks.forEach(function(b) {
+    var d = document.createElement('div');
+    d.className = 'detail-block' + (b.full ? ' full' : '');
+    d.innerHTML = '<p class="block-label">' + b.label + '</p><div class="block-body">' + b.body + '</div>';
+    grid.appendChild(d);
+  });
+  var cls = p.cat === 'teal' ? 'tag-teal' : p.cat === 'coral' ? 'tag-coral' : 'tag-purple';
+  document.getElementById('d-tag').innerHTML = '<span class="tag ' + cls + '">' + p.status + '</span>';
+  var det = document.getElementById('detail');
+  det.classList.add('open');
+  det.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closePanel() {
+  document.getElementById('detail').classList.remove('open');
+  if (active) { document.getElementById('c-' + active).classList.remove('active'); active = null; }
+}
+</script>
+</body>
+</html>
